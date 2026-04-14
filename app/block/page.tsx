@@ -18,12 +18,6 @@ export const metadata: Metadata = {
 export default function BlockPage() {
   return (
     <main className="min-h-screen bg-black text-white antialiased">
-      <p
-        className="pointer-events-none fixed left-[10px] top-[10px] z-[10050] text-[10px] text-white opacity-40"
-        aria-hidden
-      >
-        XOLID DEV BUILD
-      </p>
       <div className="mx-auto flex min-h-screen w-full max-w-[1400px] flex-col px-6 sm:px-10 lg:px-16">
         <SiteHeader active="block" />
 
