@@ -2,18 +2,9 @@
 
 import { FormEvent, useState } from "react";
 
-type WaitlistFormProps = {
-  /** Button label (default matches marketing modal). */
-  submitLabel?: string;
-  className?: string;
-};
+type UiStatus = "idle" | "loading" | "success" | "error";
 
-type UiStatus = "idle" | "loading" | "success" | "duplicate" | "error";
-
-export function WaitlistForm({
-  submitLabel = "Join the waitlist",
-  className = "",
-}: WaitlistFormProps) {
+export function ContactForm({ className = "" }: { className?: string }) {
   const [status, setStatus] = useState<UiStatus>("idle");
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -21,26 +12,21 @@ export function WaitlistForm({
     const form = e.currentTarget;
     const fd = new FormData(form);
     const name = String(fd.get("name") ?? "");
-    const country = String(fd.get("country") ?? "");
     const email = String(fd.get("email") ?? "");
+    const message = String(fd.get("message") ?? "");
 
     setStatus("loading");
 
     try {
-      const res = await fetch("/api/waitlist", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, country, email }),
+        body: JSON.stringify({ name, email, message }),
       });
 
       if (res.ok) {
         setStatus("success");
         form.reset();
-        return;
-      }
-
-      if (res.status === 409) {
-        setStatus("duplicate");
         return;
       }
 
@@ -58,10 +44,7 @@ export function WaitlistForm({
         aria-live="polite"
       >
         <p className="text-[15px] font-medium leading-snug tracking-[-0.01em] text-white sm:text-[16px]">
-          Thank you for joining the XOLID System.
-        </p>
-        <p className="text-[14px] leading-relaxed tracking-[-0.01em] text-white/52 sm:text-[15px]">
-          You will hear from us shortly.
+          Message received. We will get back to you shortly.
         </p>
       </div>
     );
@@ -85,19 +68,6 @@ export function WaitlistForm({
 
         <div>
           <label className="mb-2 block text-[10px] uppercase tracking-[0.3em] text-white/34">
-            Country
-          </label>
-          <input
-            name="country"
-            type="text"
-            autoComplete="country-name"
-            placeholder="Your country"
-            className="h-12 w-full rounded-full border border-white/10 bg-white/[0.02] px-5 text-sm text-white outline-none placeholder:text-white/24 focus:border-white/28"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-[10px] uppercase tracking-[0.3em] text-white/34">
             Email
           </label>
           <input
@@ -110,29 +80,30 @@ export function WaitlistForm({
           />
         </div>
 
+        <div>
+          <label className="mb-2 block text-[10px] uppercase tracking-[0.3em] text-white/34">
+            Message
+          </label>
+          <textarea
+            name="message"
+            required
+            rows={4}
+            placeholder="How can we help?"
+            className="w-full resize-y rounded-3xl border border-white/10 bg-white/[0.02] px-5 py-3.5 text-sm leading-relaxed text-white outline-none placeholder:text-white/24 focus:border-white/28"
+          />
+        </div>
+
         <button
           type="submit"
           disabled={status === "loading"}
           className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-white text-[11px] font-medium uppercase tracking-[0.3em] text-black transition enabled:hover:bg-white/92 disabled:opacity-60"
         >
-          {status === "loading" ? "Sending…" : submitLabel}
+          {status === "loading" ? "Sending…" : "Send message"}
         </button>
-
-        {status === "duplicate" ? (
-          <p className="text-[13px] leading-6 tracking-[-0.01em] text-white/55 sm:text-sm" role="status">
-            You are already on the waitlist.
-          </p>
-        ) : null}
 
         {status === "error" ? (
           <p className="text-[13px] leading-6 tracking-[-0.01em] text-red-300/90 sm:text-sm" role="alert">
             Something went wrong. Please try again.
-          </p>
-        ) : null}
-
-        {status === "idle" || status === "loading" ? (
-          <p className="mt-1 text-xs leading-6 text-white/32">
-            Early access is limited. Priority may be given based on profile, geography, and demand.
           </p>
         ) : null}
       </form>

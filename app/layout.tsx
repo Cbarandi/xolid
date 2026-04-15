@@ -25,7 +25,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const plausible = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN;
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
@@ -33,14 +32,14 @@ export default function RootLayout({
       <body className="cursor-none-desktop antialiased selection:bg-white selection:text-black">
         <CustomCursor />
         {children}
-        {plausible ? (
-          <Script
-            defer
-            data-domain={plausible}
-            src="https://plausible.io/js/script.js"
-            strategy="afterInteractive"
-          />
-        ) : null}
+        <Script
+          src="https://plausible.io/js/pa-0Lv0_7Zwm6C8QH5JFdLoS.js"
+          strategy="afterInteractive"
+        />
+        <Script id="plausible-init" strategy="afterInteractive">
+          {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+plausible.init();`}
+        </Script>
         {gaId ? (
           <>
             <Script
