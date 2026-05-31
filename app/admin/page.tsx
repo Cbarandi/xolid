@@ -37,6 +37,16 @@ const COCKPIT: CockpitEntry[] = [
     description: "Historical runs and outputs",
     href: ADMIN_LINKS.VIXION_RUNS,
   },
+  {
+    title: "Trading Bots",
+    description: "Create and monitor automated bots (XOLID)",
+    href: "/bots",
+  },
+  {
+    title: "Paper Bot Engine",
+    description: "Manual paper scan and exit engine",
+    href: "/admin/bots",
+  },
 ];
 
 const cardClass =

@@ -7,10 +7,18 @@
     "dev:local": "next dev -p 3005",
     "build": "next build",
     "start": "next start -p 3005",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:market": "npx tsx --test lib/market/market.test.ts",
+    "test:strategies": "npx tsx --test lib/strategies/strategy-engine.test.ts lib/strategies/rule-summary.test.ts",
+    "test:auth": "npx tsx --test lib/auth/auth.test.ts lib/auth/rbac.test.ts",
+    "test:exchange": "npx tsx --test lib/exchange/encryption.test.ts",
+    "test:audit": "npx tsx --test lib/audit/labels.test.ts",
+    "test:risk": "npx tsx --test lib/risk/checks.test.ts",
+    "hash:private-password": "npx tsx scripts/hash-private-password.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.1",
+    "bcryptjs": "^3.0.3",
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -19,6 +27,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

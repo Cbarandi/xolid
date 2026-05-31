@@ -1,18 +1,27 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/admin-session";
+import {
+  PRIVATE_SESSION_COOKIE_NAME,
+  verifySessionToken,
+} from "@/lib/auth/private-session";
+import { safeNextPath } from "@/lib/auth/redirect";
 import { LoginForm } from "./LoginForm";
 
 export const metadata = {
   title: "Log in — XOLID",
-  description: "Admin sign-in",
+  description: "Private sign-in",
 };
 
-export default async function LoginPage() {
-  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+type Props = {
+  searchParams: Promise<{ next?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: Props) {
+  const token = (await cookies()).get(PRIVATE_SESSION_COOKIE_NAME)?.value;
   if (token && (await verifySessionToken(token))) {
-    redirect("/admin");
+    const { next } = await searchParams;
+    redirect(safeNextPath(next));
   }
 
   return (

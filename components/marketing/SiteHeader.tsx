@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
-export type SiteHeaderModule = "home" | "system" | "block" | "vixion";
+export type SiteHeaderModule = "home" | "system" | "block" | "vixion" | "bots";
 
 const link = (active: SiteHeaderModule, mod: SiteHeaderModule, href: string, label: string) => {
   const isActive = active === mod;
@@ -27,11 +28,13 @@ type SiteHeaderProps = {
   active: SiteHeaderModule;
   /** Kept for API compatibility; sign-in is at /login. */
   onOpenWaitlist?: () => void;
+  /** Show logout instead of login link (private/authenticated areas). */
+  showLogout?: boolean;
 };
 
 const MOBILE_MENU_ID = "site-header-mobile-menu";
 
-export function SiteHeader({ active }: SiteHeaderProps) {
+export function SiteHeader({ active, showLogout = false }: SiteHeaderProps) {
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -134,12 +137,27 @@ export function SiteHeader({ active }: SiteHeaderProps) {
                 Vixion
               </Link>
               <Link
-                href="/login"
+                href="/bots"
                 onClick={closeMenu}
-                className="w-full py-2 text-center text-[11px] uppercase tracking-[0.28em] text-white/50 transition hover:text-white/90"
+                className={`w-full py-2 text-center text-[11px] uppercase tracking-[0.28em] transition ${
+                  active === "bots" ? "text-white/90" : "text-white/50 hover:text-white/90"
+                }`}
               >
-                Log in
+                Bots
               </Link>
+              {showLogout ? (
+                <div className="w-full py-2 text-center">
+                  <LogoutButton className="w-full py-2 text-center" />
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={closeMenu}
+                  className="w-full py-2 text-center text-[11px] uppercase tracking-[0.28em] text-white/50 transition hover:text-white/90"
+                >
+                  Log in
+                </Link>
+              )}
             </nav>
           </div>
         </>
@@ -171,9 +189,14 @@ export function SiteHeader({ active }: SiteHeaderProps) {
           {link(active, "system", "/system", "System")}
           {link(active, "block", "/block", "Block")}
           {link(active, "vixion", "/vixion", "Vixion")}
-          <Link href="/login" className={navLinkClass}>
-            Log in
-          </Link>
+          {link(active, "bots", "/bots", "Bots")}
+          {showLogout ? (
+            <LogoutButton />
+          ) : (
+            <Link href="/login" className={navLinkClass}>
+              Log in
+            </Link>
+          )}
         </nav>
 
         <button

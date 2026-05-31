@@ -2,11 +2,12 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { safeNextPath } from "@/lib/auth/redirect";
 
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -19,20 +20,17 @@ export function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
       if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(data.error ?? "Invalid credentials");
+        setError("Invalid credentials");
         return;
       }
-      const from = searchParams.get("from");
-      const dest =
-        from && from.startsWith("/admin") && !from.includes("//") && !from.includes(":")
-          ? from
-          : "/admin";
-      router.push(dest);
+      const next = safeNextPath(searchParams.get("next"));
+      router.push(next);
       router.refresh();
+    } catch {
+      setError("Invalid credentials");
     } finally {
       setPending(false);
     }
@@ -45,19 +43,22 @@ export function LoginForm() {
       autoComplete="on"
     >
       <div className="space-y-2">
-        <label htmlFor="email" className="block text-[10px] font-medium uppercase tracking-[0.38em] text-white/40">
-          Email
+        <label
+          htmlFor="username"
+          className="block text-[10px] font-medium uppercase tracking-[0.38em] text-white/40"
+        >
+          Username
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
+          id="username"
+          name="username"
+          type="text"
           autoComplete="username"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           required
           className="w-full border border-white/12 bg-transparent px-4 py-3 text-[15px] tracking-[-0.01em] text-white outline-none transition placeholder:text-white/25 focus:border-white/28"
-          placeholder="you@company.com"
+          placeholder="Username"
         />
       </div>
       <div className="space-y-2">
